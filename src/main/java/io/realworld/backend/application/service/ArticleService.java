@@ -4,10 +4,12 @@ import io.realworld.backend.application.dto.Mappers;
 import io.realworld.backend.application.dto.Mappers.FavouriteInfo;
 import io.realworld.backend.application.dto.Mappers.MultipleFavouriteInfo;
 import io.realworld.backend.application.exception.ArticleNotFoundException;
+import io.realworld.backend.application.exception.CommentNotFoundException;
 import io.realworld.backend.application.util.BaseService;
 import io.realworld.backend.domain.aggregate.article.Article;
 import io.realworld.backend.domain.aggregate.article.ArticleRepository;
 import io.realworld.backend.domain.aggregate.article.OffsetBasedPageRequest;
+import io.realworld.backend.domain.aggregate.comment.Comment;
 import io.realworld.backend.domain.aggregate.comment.CommentRepository;
 import io.realworld.backend.domain.aggregate.favourite.ArticleFavourite;
 import io.realworld.backend.domain.aggregate.favourite.ArticleFavouriteId;
@@ -39,6 +41,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.NativeWebRequest;
+import static io.realworld.backend.application.constants.Constants.SUCCESS;
 
 @Service
 @Transactional
@@ -296,5 +299,37 @@ public class ArticleService extends BaseService implements ArticlesApiDelegate, 
   @Override
   public AuthenticationService getAuthenticationService() {
     return authenticationService;
+  }
+  @Override
+  public ResponseEntity<String> likeArticleComment(Integer id) {
+    Optional<Comment> commentOptional = commentThrow(id);
+    if (commentOptional.isPresent()) {
+     Comment comment = commentOptional.get();
+      comment.incrementCommentLikes();
+      if(comment.getDislikes() > 0){
+        comment.decrementCommentDislikes();
+      }
+      commentRepository.save(comment);
+    }
+    return ok(SUCCESS);
+  }
+
+  @Override
+  public ResponseEntity<String> dislikeArticleComment(Integer id) {
+   Optional<Comment> commentOptional = commentThrow(id);
+    if (commentOptional.isPresent()) {
+      Comment comment = commentOptional.get();
+      comment.incrementCommentDislikes();
+      if(comment.getLikes() > 0){
+        comment.decrementCommentLikes();
+      }
+      commentRepository.save(comment);
+    }
+    return ok(SUCCESS);
+  }
+  private  Optional<Comment> commentThrow(Integer id){
+   return Optional.ofNullable(commentRepository
+                    .findById(id.longValue())
+                    .orElseThrow(() -> new CommentNotFoundException("comment with " + id + " not found")));
   }
 }
