@@ -839,12 +839,16 @@
         "password": {
           "type": "string",
           "format": "password"
+        },
+        "role": {
+          "type": "string"
         }
       },
       "required": [
         "username",
         "email",
-        "password"
+        "password",
+        "role"
       ]
     },
     "NewUserRequest": {
@@ -857,6 +861,14 @@
       "required": [
         "user"
       ]
+    },
+    "Role": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
     },
     "User": {
       "type": "object",
@@ -875,6 +887,12 @@
         },
         "image": {
           "type": "string"
+        },
+        "roles": {
+          "type": "object",
+          "items": {
+            "$ref": "#/definitions/Role"
+          }
         }
       },
       "required": [
@@ -882,7 +900,8 @@
         "token",
         "username",
         "bio",
-        "image"
+        "image",
+        "roles"
       ]
     },
     "UserResponse": {

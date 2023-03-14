@@ -14,6 +14,7 @@ import io.realworld.backend.application.exception.EmailAlreadyUsedException;
 import io.realworld.backend.application.exception.InvalidPasswordException;
 import io.realworld.backend.application.exception.UsernameAlreadyUsedException;
 import io.realworld.backend.application.service.UserService;
+import io.realworld.backend.domain.aggregate.role.RoleRepository;
 import io.realworld.backend.domain.aggregate.user.User;
 import io.realworld.backend.domain.aggregate.user.UserRepository;
 import io.realworld.backend.domain.service.AuthenticationService;
@@ -38,15 +39,17 @@ public class UserServiceTest {
   @Mock private @MonotonicNonNull JwtService jwtService;
   @Mock private @MonotonicNonNull AuthenticationService authenticationService;
 
+  @Mock private @MonotonicNonNull RoleRepository roleRepository;
+
   @BeforeEach
-  @RequiresNonNull({"userRepository", "jwtService", "authenticationService"})
+  @RequiresNonNull({"userRepository", "jwtService", "authenticationService", "roleRepository"})
   public void setUp() {
     openMocks(this);
     given(authenticationService.getCurrentUser())
         .willReturn(Optional.of(new User("email@example.com", "example", "hash")));
     given(authenticationService.getCurrentToken()).willReturn(Optional.of("token"));
     given(jwtService.generateToken(any())).willReturn("token");
-    userService = new UserService(userRepository, jwtService, authenticationService);
+    userService = new UserService(userRepository, jwtService, authenticationService, roleRepository);
   }
 
   @Test

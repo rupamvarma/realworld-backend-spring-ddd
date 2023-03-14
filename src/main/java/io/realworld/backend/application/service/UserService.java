@@ -3,11 +3,9 @@ package io.realworld.backend.application.service;
 import static io.realworld.backend.application.dto.Mappers.toUserResponse;
 
 import io.realworld.backend.application.dto.Mappers;
-import io.realworld.backend.application.exception.EmailAlreadyUsedException;
-import io.realworld.backend.application.exception.InvalidPasswordException;
-import io.realworld.backend.application.exception.UserNotFoundException;
-import io.realworld.backend.application.exception.UsernameAlreadyUsedException;
+import io.realworld.backend.application.exception.*;
 import io.realworld.backend.application.util.BaseService;
+import io.realworld.backend.domain.aggregate.role.RoleRepository;
 import io.realworld.backend.domain.aggregate.user.User;
 import io.realworld.backend.domain.aggregate.user.UserRepository;
 import io.realworld.backend.domain.service.AuthenticationService;
@@ -32,15 +30,18 @@ public class UserService extends BaseService implements UserApiDelegate, UsersAp
   private final JwtService jwtService;
   private final AuthenticationService authenticationService;
 
+  private final RoleRepository roleRepository;
+
   /** Creates ApiFacade instance. */
   @Autowired
   public UserService(
-      UserRepository userRepository,
-      JwtService jwtService,
-      AuthenticationService authenticationService) {
+          UserRepository userRepository,
+          JwtService jwtService,
+          AuthenticationService authenticationService, RoleRepository roleRepository) {
     this.userRepository = userRepository;
     this.jwtService = jwtService;
     this.authenticationService = authenticationService;
+    this.roleRepository = roleRepository;
   }
 
   /** {@inheritDoc} */
@@ -50,7 +51,40 @@ public class UserService extends BaseService implements UserApiDelegate, UsersAp
   }
 
   /** {@inheritDoc} */
-  @Override
+  public ResponseEntity<UserResponseData> createUser(NewUserRequestData req) {
+    final var newUserData = req.getUser();
+    String username = newUserData.getUsername();
+    String email = newUserData.getEmail();
+    String role = newUserData.getRole();
+    userRepository
+            .findByUsername(username)
+            .ifPresent(
+                    u -> {
+                      throw new UsernameAlreadyUsedException("Username already used - " + username);
+                    });
+    userRepository
+            .findByEmail(email)
+            .ifPresent(
+                    u -> {
+                      throw new EmailAlreadyUsedException("Email already used - " + email);
+                    });
+    return roleRepository
+            .findByName(role)
+            .map(
+                    roleData -> {
+                      final var newUser =
+                              new User(
+                                      email,
+                                      username,
+                                      authenticationService.encodePassword(newUserData.getPassword()),
+                                      roleData);
+
+                      final var user = userRepository.save(newUser);
+                      return ok(toUserResponse(user, jwtService.generateToken(user)));
+                    })
+            .orElseThrow(() -> new NoRoleFoundException("Role doesn't exist - " + role));
+  }
+ /* @Override
   public ResponseEntity<UserResponseData> createUser(NewUserRequestData req) {
     final var newUserData = req.getUser();
     String username = newUserData.getUsername();
@@ -72,7 +106,7 @@ public class UserService extends BaseService implements UserApiDelegate, UsersAp
     final var user = userRepository.save(newUser);
     return ok(toUserResponse(user, jwtService.generateToken(user)));
   }
-
+*/
   /** {@inheritDoc} */
   @Override
   public ResponseEntity<UserResponseData> getCurrentUser() {

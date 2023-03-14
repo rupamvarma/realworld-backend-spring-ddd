@@ -68,10 +68,41 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .permitAll()
         .antMatchers(HttpMethod.GET, "/api/articles/**", "/api/profiles/**", "/api/tags")
         .permitAll()
-        // Our private endpoints
-        .anyRequest()
-        .authenticated();
+            // Our private endpoints
+            // All logged-in users
+            .antMatchers(
+                    HttpMethod.GET,
+                    "/api/articles/favourites",
+                    "/api/articles/feed",
+                    "/api/articles/*/comments",
+                    "/api/user")
+            .authenticated()
+            .antMatchers(HttpMethod.PUT, "/api/user")
+            .authenticated()
+            .antMatchers(
+                    HttpMethod.POST,
+                    "/api/articles/*/comments",
+                    "/api/articles/*/favorite",
+                    "/api/profiles/*/follow")
+            .authenticated()
+            .antMatchers(HttpMethod.DELETE, "/api/articles/*/favorite", "/api/profiles/*/follow")
+            .authenticated()
+            .antMatchers(HttpMethod.DELETE, "/api/articles/{slug}/comments/{id}")
+            .access("@userSecurity.checkAuthority(authentication,#slug,#id)")
 
+            // By admin and writer only
+            .antMatchers(HttpMethod.POST, "/api/articles")
+            .hasAuthority("hasWriterAccess")
+            .antMatchers(HttpMethod.DELETE, "/api/articles/{slug}")
+            .access("@userSecurity.checkAuthority(authentication,#slug,-1)")
+            .antMatchers(HttpMethod.PUT, "/api/articles/{slug}")
+            .access("@userSecurity.checkAuthority(authentication,#slug,-1)")
+
+            // By Admin only
+            .antMatchers(HttpMethod.GET, "/api/users")
+            .hasAuthority("hasAdminAccess")
+            .anyRequest()
+            .authenticated();
     http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
   }
 }

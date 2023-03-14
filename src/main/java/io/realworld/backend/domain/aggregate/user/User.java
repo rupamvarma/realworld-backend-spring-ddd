@@ -1,11 +1,9 @@
 package io.realworld.backend.domain.aggregate.user;
 
 import com.google.common.base.MoreObjects;
+import io.realworld.backend.domain.aggregate.role.Role;
 import java.util.Optional;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -13,6 +11,7 @@ import org.checkerframework.framework.qual.TypeUseLocation;
 
 @Entity
 @DefaultQualifier(value = Nullable.class, locations = TypeUseLocation.FIELD)
+@Table(name = "users")
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,6 +25,15 @@ public class User {
   private String image = null;
 
   protected User() {}
+
+  @OneToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "role_id", referencedColumnName = "id")
+  private @NotNull Role role = new Role();
+
+  public User(String email, String username, String passwordHash, Role role) {
+    this(email, username, passwordHash);
+    this.role = role;
+  }
 
   /** Creates User instance. */
   public User(String email, String username, String passwordHash) {
@@ -80,6 +88,10 @@ public class User {
 
   public void setImage(String image) {
     this.image = image;
+  }
+
+  public Role getRole() {
+    return role;
   }
 
   /** {@inheritDoc} */
