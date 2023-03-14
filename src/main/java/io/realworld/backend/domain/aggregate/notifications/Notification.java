@@ -19,7 +19,7 @@ public class Notification {
     private @NotNull Instant createdOn = Instant.now();
     private @NotNull String message = "";
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", referencedColumnName = "id")
     private @NotNull User sender = new User("", "", "", new Role());
     private long receiverId = 0;
@@ -27,6 +27,42 @@ public class Notification {
     public Notification(String message, User sender, long receiverId) {
         this.message = message;
         this.sender = sender;
+        this.receiverId = receiverId;
+    }
+
+    public Notification() {
+
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public Instant getCreatedOn() {
+        return createdOn;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public User getSender() {
+        return sender;
+    }
+
+    public void setSender(User sender) {
+        this.sender = sender;
+    }
+
+    public long getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(long receiverId) {
         this.receiverId = receiverId;
     }
 }

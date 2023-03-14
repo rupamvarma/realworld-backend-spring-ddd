@@ -101,6 +101,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             // By Admin only
             .antMatchers(HttpMethod.GET, "/api/users")
             .hasAuthority("hasAdminAccess")
+            .antMatchers(HttpMethod.POST, "/api/notifications")
+            .hasAuthority("hasAdminAccess")
             .anyRequest()
             .authenticated();
     http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);

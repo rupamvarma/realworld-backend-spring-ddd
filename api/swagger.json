@@ -797,6 +797,49 @@
           }
         }
       }
+    },
+    "/notifications": {
+      "post": {
+        "summary": "Create a notification",
+        "description": "Create a notification. Auth is required",
+        "tags": [
+          "Notifications"
+        ],
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "operationId": "CreateNotification",
+        "parameters": [
+          {
+            "name": "notification",
+            "in": "body",
+            "required": true,
+            "description": "notification to create",
+            "schema": {
+              "$ref": "#/definitions/NewNotificationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleNotificationResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/GenericErrorModel"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -1061,6 +1104,38 @@
         "articlesCount"
       ]
     },
+    "NewNotificationRequest": {
+      "type": "object",
+      "properties": {
+        "notification": {
+          "$ref": "#/definitions/NewNotification"
+        }
+      },
+      "required": [
+        "notification"
+      ]
+    },
+    "NewNotification": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "senderId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "receiverId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "required": [
+        "message",
+        "senderId",
+        "receiverId"
+      ]
+    },
     "NewArticle": {
       "type": "object",
       "properties": {
@@ -1160,6 +1235,46 @@
       },
       "required": [
         "comment"
+      ]
+    },
+    "SingleNotificationResponse": {
+      "type": "object",
+      "properties": {
+        "notification": {
+          "$ref": "#/definitions/Notification"
+        }
+      },
+      "required": [
+        "notification"
+      ]
+    },
+    "notification": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "message": {
+          "type": "string"
+        },
+        "senderId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "receiverId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "required": [
+        "message",
+        "senderId",
+        "receiverId"
       ]
     },
     "MultipleCommentsResponse": {
