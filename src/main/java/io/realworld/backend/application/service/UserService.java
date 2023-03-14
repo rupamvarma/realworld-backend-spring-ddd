@@ -84,29 +84,6 @@ public class UserService extends BaseService implements UserApiDelegate, UsersAp
                     })
             .orElseThrow(() -> new NoRoleFoundException("Role doesn't exist - " + role));
   }
- /* @Override
-  public ResponseEntity<UserResponseData> createUser(NewUserRequestData req) {
-    final var newUserData = req.getUser();
-    String username = newUserData.getUsername();
-    String email = newUserData.getEmail();
-    userRepository
-        .findByUsername(username)
-        .ifPresent(
-            u -> {
-              throw new UsernameAlreadyUsedException("Username already used - " + username);
-            });
-    userRepository
-        .findByEmail(email)
-        .ifPresent(
-            u -> {
-              throw new EmailAlreadyUsedException("Email already used - " + email);
-            });
-    final var newUser =
-        new User(email, username, authenticationService.encodePassword(newUserData.getPassword()));
-    final var user = userRepository.save(newUser);
-    return ok(toUserResponse(user, jwtService.generateToken(user)));
-  }
-*/
   /** {@inheritDoc} */
   @Override
   public ResponseEntity<UserResponseData> getCurrentUser() {
