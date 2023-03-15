@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import io.realworld.backend.domain.aggregate.article.Article;
 import io.realworld.backend.domain.aggregate.comment.Comment;
+import io.realworld.backend.domain.aggregate.notifications.Notification;
 import io.realworld.backend.domain.aggregate.user.User;
 import io.realworld.backend.rest.api.ArticleData;
 import io.realworld.backend.rest.api.CommentData;
@@ -20,6 +21,10 @@ import io.realworld.backend.rest.api.UpdateArticleData;
 import io.realworld.backend.rest.api.UpdateUserData;
 import io.realworld.backend.rest.api.UserData;
 import io.realworld.backend.rest.api.UserResponseData;
+import io.realworld.backend.rest.api.NewNotificationData;
+import io.realworld.backend.rest.api.NotificationData;
+import io.realworld.backend.rest.api.SingleNotificationResponseData;
+
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
@@ -120,7 +125,30 @@ public class Mappers {
     article.setTags(ImmutableSet.copyOf(newArticleData.getTagList()));
     return article;
   }
-
+  /** Constructs Notification from the request. */
+  public static Notification fromNewNotificationData(NewNotificationData newNotificationData, User user, User receiver) {
+    final var notification = new Notification();
+    notification.setMessage(newNotificationData.getMessage());
+    notification.setReceiver(receiver);
+    notification.setSenderId(user.getId());
+    return notification;
+  }
+  /** Constructs SingleNotificationResponseData response. */
+  public static SingleNotificationResponseData toSingleNotificationResponse(Notification notification) {
+    final var resp = new SingleNotificationResponseData();
+    final NotificationData notificationData = tonotificationData(notification);
+    resp.setNotification(notificationData);
+    return resp;
+  }
+  private static NotificationData tonotificationData(Notification notification) {
+    final var notificationData = new NotificationData();
+    notificationData.setId(notification.getId());
+    notificationData.setMessage(notification.getMessage());
+    notificationData.setSenderId(notification.getSenderId());
+    notificationData.setReceiverId(notification.getReceiver().getId());
+    notificationData.setCreatedAt(notification.getCreatedOn().atOffset(ZoneOffset.UTC));
+    return notificationData;
+  }
   /** Updates article. */
   public static void updateArticle(Article article, UpdateArticleData updateArticleData) {
     final var title = updateArticleData.getTitle();
