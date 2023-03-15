@@ -82,6 +82,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers(
                     HttpMethod.POST,
                     "/api/articles/*/comments",
+                    "/api/articles/*/dislike",
+                    "/api/articles/*/like",
                     "/api/articles/*/favorite",
                     "/api/profiles/*/follow")
             .authenticated()

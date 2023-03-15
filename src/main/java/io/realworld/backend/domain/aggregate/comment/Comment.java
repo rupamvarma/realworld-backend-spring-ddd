@@ -4,11 +4,7 @@ import com.google.common.base.MoreObjects;
 import io.realworld.backend.domain.aggregate.article.Article;
 import io.realworld.backend.domain.aggregate.user.User;
 import java.time.Instant;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -27,6 +23,10 @@ public class Comment {
   private @NotNull String body = "";
   private @NotNull Instant createdAt = Instant.now();
   private @NotNull Instant updatedAt = Instant.now();
+
+  private int likes = 0;
+
+  private int dislikes = 0;
 
   public long getId() {
     return id;
@@ -86,5 +86,37 @@ public class Comment {
         .add("createdAt", createdAt)
         .add("updatedAt", updatedAt)
         .toString();
+  }
+
+  public int getLikes() {
+    return likes;
+  }
+
+  public void setLikes(int likes) {
+    this.likes = likes;
+  }
+
+  public int getDislikes() {
+    return dislikes;
+  }
+
+  public void setDislikes(int dislikes) {
+    this.dislikes = dislikes;
+  }
+
+  public void incrementCommentLikes() {
+    this.setLikes(this.getLikes() + 1);
+  }
+
+  public void decrementCommentLikes() {
+    this.setLikes(this.getLikes() - 1);
+  }
+
+  public void incrementCommentDislikes() {
+    this.setDislikes(this.getDislikes() + 1);
+  }
+
+  public void decrementCommentDislikes() {
+    this.setDislikes(this.getDislikes() - 1);
   }
 }
