@@ -1,16 +1,16 @@
 package io.realworld.backend.application.service;
 
 import io.realworld.backend.application.dto.Mappers;
-import io.realworld.backend.application.exception.ArticleNotFoundException;
 import io.realworld.backend.application.exception.UserNotFoundException;
 import io.realworld.backend.application.util.BaseService;
-import io.realworld.backend.domain.aggregate.article.Article;
-import io.realworld.backend.domain.aggregate.favourite.ArticleFavouriteRepository;
 import io.realworld.backend.domain.aggregate.notifications.Notification;
 import io.realworld.backend.domain.aggregate.notifications.NotificationRepository;
 import io.realworld.backend.domain.aggregate.user.UserRepository;
 import io.realworld.backend.domain.service.AuthenticationService;
-import io.realworld.backend.rest.api.*;
+import io.realworld.backend.rest.api.NewNotificationRequestData;
+import io.realworld.backend.rest.api.NotificationsApiDelegate;
+import io.realworld.backend.rest.api.SingleNotificationResponseData;
+import io.realworld.backend.rest.api.MultipleNotificationsResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
