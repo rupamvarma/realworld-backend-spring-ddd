@@ -75,7 +75,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     "/api/articles/favourites",
                     "/api/articles/feed",
                     "/api/articles/*/comments",
-                    "/api/user")
+                    "/api/user", "/api/notifications")
             .authenticated()
             .antMatchers(HttpMethod.PUT, "/api/user")
             .authenticated()

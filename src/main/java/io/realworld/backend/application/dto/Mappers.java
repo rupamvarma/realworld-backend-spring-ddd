@@ -24,7 +24,7 @@ import io.realworld.backend.rest.api.UserResponseData;
 import io.realworld.backend.rest.api.NewNotificationData;
 import io.realworld.backend.rest.api.NotificationData;
 import io.realworld.backend.rest.api.SingleNotificationResponseData;
-
+import io.realworld.backend.rest.api.MultipleNotificationsResponseData;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.List;
@@ -148,6 +148,18 @@ public class Mappers {
     notificationData.setReceiverId(notification.getReceiver().getId());
     notificationData.setCreatedAt(notification.getCreatedOn().atOffset(ZoneOffset.UTC));
     return notificationData;
+  }
+  /** Constructs MultipleArticlesResponseData response. */
+  public static MultipleNotificationsResponseData toMultipleNotificationsResponseData(
+          Collection<Notification> notifications) {
+    final var multipleNotificationsResponseData = new MultipleNotificationsResponseData();
+    final var notificationDataList =
+            notifications.stream()
+                    .map(
+                            Mappers::tonotificationData
+                    ).collect(Collectors.toList());
+    multipleNotificationsResponseData.setNotifications(notificationDataList);
+    return multipleNotificationsResponseData;
   }
   /** Updates article. */
   public static void updateArticle(Article article, UpdateArticleData updateArticleData) {

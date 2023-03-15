@@ -10,10 +10,13 @@ import io.realworld.backend.domain.service.AuthenticationService;
 import io.realworld.backend.rest.api.NewNotificationRequestData;
 import io.realworld.backend.rest.api.NotificationsApiDelegate;
 import io.realworld.backend.rest.api.SingleNotificationResponseData;
+import io.realworld.backend.rest.api.MultipleNotificationsResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -52,5 +55,22 @@ public class NotificationService extends BaseService implements NotificationsApi
     }
     private ResponseEntity<SingleNotificationResponseData> notificationResponse(Notification notification) {
         return ok(Mappers.toSingleNotificationResponse(notification));
+    }
+
+
+    @Override
+    public ResponseEntity<MultipleNotificationsResponseData> getNotifications() {
+        final var currentUser = currentUserOrThrow();
+        final var user =
+                userRepository
+                        .findById(currentUser.getId())
+                        .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return notificationsResponse(notificationRepository
+                .findAllByReceiver(user).stream().collect(Collectors.toList()));
+    }
+    private ResponseEntity<MultipleNotificationsResponseData> notificationsResponse(
+            List<Notification> notifications) {
+        return ok(
+                Mappers.toMultipleNotificationsResponseData(notifications));
     }
 }
