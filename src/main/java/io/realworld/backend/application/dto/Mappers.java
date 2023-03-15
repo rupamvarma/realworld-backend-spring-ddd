@@ -126,11 +126,11 @@ public class Mappers {
     return article;
   }
   /** Constructs Notification from the request. */
-  public static Notification fromNewNotificationData(NewNotificationData newNotificationData, User user) {
+  public static Notification fromNewNotificationData(NewNotificationData newNotificationData, User user, User receiver) {
     final var notification = new Notification();
     notification.setMessage(newNotificationData.getMessage());
-    notification.setReceiverId(newNotificationData.getReceiverId());
-    notification.setSender(user);
+    notification.setReceiver(receiver);
+    notification.setSenderId(user.getId());
     return notification;
   }
   /** Constructs SingleNotificationResponseData response. */
@@ -144,8 +144,8 @@ public class Mappers {
     final var notificationData = new NotificationData();
     notificationData.setId(notification.getId());
     notificationData.setMessage(notification.getMessage());
-    notificationData.setSenderId(notification.getSender().getId());
-    notificationData.setReceiverId(notification.getReceiverId());
+    notificationData.setSenderId(notification.getSenderId());
+    notificationData.setReceiverId(notification.getReceiver().getId());
     notificationData.setCreatedAt(notification.getCreatedOn().atOffset(ZoneOffset.UTC));
     return notificationData;
   }

@@ -20,14 +20,14 @@ public class Notification {
     private @NotNull String message = "";
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id", referencedColumnName = "id")
-    private @NotNull User sender = new User("", "", "", new Role());
-    private long receiverId = 0;
+    @JoinColumn(name = "receiver_id", referencedColumnName = "id")
+    private @NotNull User receiver = new User("", "", "", new Role());
+    private long senderId = 0;
 
-    public Notification(String message, User sender, long receiverId) {
+    public Notification(String message, User receiver, long senderId) {
         this.message = message;
-        this.sender = sender;
-        this.receiverId = receiverId;
+        this.receiver = receiver;
+        this.senderId = senderId;
     }
 
     public Notification() {
@@ -50,19 +50,19 @@ public class Notification {
         this.message = message;
     }
 
-    public User getSender() {
-        return sender;
+    public User getReceiver() {
+        return receiver;
     }
 
-    public void setSender(User sender) {
-        this.sender = sender;
+    public void setReceiver(User receiver) {
+        this.receiver = receiver;
     }
 
-    public long getReceiverId() {
-        return receiverId;
+    public long getSenderId() {
+        return senderId;
     }
 
-    public void setReceiverId(long receiverId) {
-        this.receiverId = receiverId;
+    public void setSenderId(long senderId) {
+        this.senderId = senderId;
     }
 }

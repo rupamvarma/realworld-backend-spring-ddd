@@ -1,16 +1,14 @@
 package io.realworld.backend.application.service;
 
 import io.realworld.backend.application.dto.Mappers;
+import io.realworld.backend.application.exception.UserNotFoundException;
 import io.realworld.backend.application.util.BaseService;
-import io.realworld.backend.domain.aggregate.article.Article;
-import io.realworld.backend.domain.aggregate.favourite.ArticleFavouriteId;
 import io.realworld.backend.domain.aggregate.notifications.Notification;
 import io.realworld.backend.domain.aggregate.notifications.NotificationRepository;
 import io.realworld.backend.domain.aggregate.user.UserRepository;
 import io.realworld.backend.domain.service.AuthenticationService;
 import io.realworld.backend.rest.api.NewNotificationRequestData;
 import io.realworld.backend.rest.api.NotificationsApiDelegate;
-import io.realworld.backend.rest.api.SingleArticleResponseData;
 import io.realworld.backend.rest.api.SingleNotificationResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,11 +41,13 @@ public class NotificationService extends BaseService implements NotificationsApi
     @Override
     public ResponseEntity<SingleNotificationResponseData> createNotification(NewNotificationRequestData request) {
         final var currentUser = currentUserOrThrow();
-
-        final var newArticleData = request.getNotification();
-        final var notification = Mappers.fromNewNotificationData(newArticleData, currentUser);
+        final var newNotificationData = request.getNotification();
+        final var user =
+                userRepository
+                        .findById(newNotificationData.getReceiverId())
+                        .orElseThrow(() -> new UserNotFoundException(String.valueOf(newNotificationData.getReceiverId())));
+        final var notification = Mappers.fromNewNotificationData(newNotificationData, currentUser, user);
         notificationRepository.save(notification);
-
         return notificationResponse(notification);
     }
     private ResponseEntity<SingleNotificationResponseData> notificationResponse(Notification notification) {
