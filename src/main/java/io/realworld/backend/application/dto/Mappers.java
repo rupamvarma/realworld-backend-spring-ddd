@@ -6,24 +6,7 @@ import io.realworld.backend.domain.aggregate.article.Article;
 import io.realworld.backend.domain.aggregate.comment.Comment;
 import io.realworld.backend.domain.aggregate.notifications.Notification;
 import io.realworld.backend.domain.aggregate.user.User;
-import io.realworld.backend.rest.api.ArticleData;
-import io.realworld.backend.rest.api.CommentData;
-import io.realworld.backend.rest.api.MultipleArticlesResponseData;
-import io.realworld.backend.rest.api.MultipleCommentsResponseData;
-import io.realworld.backend.rest.api.NewArticleData;
-import io.realworld.backend.rest.api.NewCommentData;
-import io.realworld.backend.rest.api.ProfileData;
-import io.realworld.backend.rest.api.ProfileResponseData;
-import io.realworld.backend.rest.api.SingleArticleResponseData;
-import io.realworld.backend.rest.api.SingleCommentResponseData;
-import io.realworld.backend.rest.api.TagsResponseData;
-import io.realworld.backend.rest.api.UpdateArticleData;
-import io.realworld.backend.rest.api.UpdateUserData;
-import io.realworld.backend.rest.api.UserData;
-import io.realworld.backend.rest.api.UserResponseData;
-import io.realworld.backend.rest.api.NewNotificationData;
-import io.realworld.backend.rest.api.NotificationData;
-import io.realworld.backend.rest.api.SingleNotificationResponseData;
+import io.realworld.backend.rest.api.*;
 
 import java.time.ZoneOffset;
 import java.util.Collection;
@@ -148,6 +131,18 @@ public class Mappers {
     notificationData.setReceiverId(notification.getReceiver().getId());
     notificationData.setCreatedAt(notification.getCreatedOn().atOffset(ZoneOffset.UTC));
     return notificationData;
+  }
+  /** Constructs MultipleArticlesResponseData response. */
+  public static MultipleNotificationsResponseData toMultipleNotificationsResponseData(
+          Collection<Notification> notifications) {
+    final var multipleNotificationsResponseData = new MultipleNotificationsResponseData();
+    final var notificationDataList =
+            notifications.stream()
+                    .map(
+                            Mappers::tonotificationData
+                    ).collect(Collectors.toList());
+    multipleNotificationsResponseData.setNotifications(notificationDataList);
+    return multipleNotificationsResponseData;
   }
   /** Updates article. */
   public static void updateArticle(Article article, UpdateArticleData updateArticleData) {
